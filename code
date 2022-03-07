@@ -1,1 +1,427 @@
+from math import *
+import pygame as pg
+import tkinter as tk
+import os
 
+from pygame.math import Vector2
+
+
+class SurfaceRotatedT(pg.sprite.Sprite):   
+    def __init__(self, pos, L, r1, r2, A, L1, L2, rayon_barre, rayon1, rayon2, coef_conv, const_angle_pendule, d, R):
+        super().__init__()
+        self.image = pg.Surface((L*coef_conv, 70), pg.SRCALPHA)
+        self.tige_surface = pg.draw.rect(self.image, (0,0,0), ((0,70/2-rayon_barre*coef_conv),(L*coef_conv,2*rayon_barre*coef_conv +2)) )
+        self.m1_surface = pg.draw.rect(self.image, (255,0,200), ((L*coef_conv/2 + r1*coef_conv - L1*coef_conv/2, 70/2 - rayon1*coef_conv),(L1*coef_conv, 2*rayon1*coef_conv +2))) 
+        self.m2_surface = pg.draw.rect(self.image, (0,255,0), ((L*coef_conv/2 + r2*coef_conv - L2*coef_conv/2, 70/2 - rayon2*coef_conv),(L2*coef_conv, 2*rayon2*coef_conv +2))) 
+        # A reference to the original image to preserve the quality.
+        self.orig_image = self.image
+        self.rect = self.image.get_rect(center=pos)
+        self.pos = Vector2(pos)  # The original center position/pivot point.
+        self.offset = Vector2(-(R - d)*coef_conv, 0)  # We shift the sprite 50 px to the right.
+        self.angle = -const_angle_pendule + A
+
+    def update(self, pos, w, tick, const_angle_pendule, isOn, currentTick, L, r1, r2, A, L1, L2, rayon_barre, rayon1, rayon2, coef_conv, R, d):
+        self.image = pg.Surface((L*coef_conv, 70), pg.SRCALPHA)
+        self.orig_image = self.image
+        self.rect = self.image.get_rect(center=pos)
+        self.pos = Vector2(pos)  # The original center position/pivot point.
+        self.offset = Vector2(-(R - d)*coef_conv, 0)
+        self.tige_surface = pg.draw.rect(self.image, (0,0,0), ((0,70/2-rayon_barre*coef_conv),(L*coef_conv,2*rayon_barre*coef_conv +2)) )
+        self.m1_surface = pg.draw.rect(self.image, (255,0,200), ((L*coef_conv/2 + r1*coef_conv - L1*coef_conv/2, 70/2 - rayon1*coef_conv),(L1*coef_conv, 2*rayon1*coef_conv +2))) 
+        self.m2_surface = pg.draw.rect(self.image, (0,255,0), ((L*coef_conv/2 + r2*coef_conv - L2*coef_conv/2, 70/2 - rayon2*coef_conv),(L2*coef_conv, 2*rayon2*coef_conv +2))) 
+        if isOn:
+            self.angle = abs(A) * sin(w*(tick - currentTick)/1000 + A * pi/180) - const_angle_pendule
+            self.rotate()
+        else:
+            self.angle = -const_angle_pendule + A
+            self.rotate()
+
+    def rotate(self):
+        """Rotate the image of the sprite around a pivot point."""
+        # Rotate the image.
+        self.image = pg.transform.rotozoom(self.orig_image, -self.angle, 1)
+        # Rotate the offset vector.
+        offset_rotated = self.offset.rotate(self.angle)
+        # Create a new rect with the center of the sprite + the offset.
+        self.rect = self.image.get_rect(center=self.pos+offset_rotated)
+
+class SurfaceRotatedE(pg.sprite.Sprite):   
+    def __init__(self, pos, L, r1, r2, A, L1, L2, rayon_barre, rayon1, rayon2, coef_conv, const_angle_pendule, d, R):
+        super().__init__()
+        self.image = pg.Surface((L*coef_conv, 70), pg.SRCALPHA)
+        self.tige_surface = pg.draw.rect(self.image, (0,0,0), ((0,70/2-rayon_barre*coef_conv),(L*coef_conv,2*rayon_barre*coef_conv +2)) )
+        self.m1_surface = pg.draw.rect(self.image, (255,0,200), ((L*coef_conv/2 + r1*coef_conv - L1*coef_conv/2, 70/2 - rayon1*coef_conv),(L1*coef_conv, 2*rayon1*coef_conv +2))) 
+        self.m2_surface = pg.draw.rect(self.image, (0,255,0), ((L*coef_conv/2 + r2*coef_conv - L2*coef_conv/2, 70/2 - rayon2*coef_conv),(L2*coef_conv, 2*rayon2*coef_conv +2))) 
+        # A reference to the original image to preserve the quality.
+        self.orig_image = self.image
+        self.rect = self.image.get_rect(center=pos)
+        self.pos = Vector2(pos)  # The original center position/pivot point.
+        self.offset = Vector2(-(R - d)*coef_conv, 0)  # We shift the sprite 50 px to the right.
+        self.angle = -const_angle_pendule + A
+
+    def update(self, pos, w, tick, const_angle_pendule, isOn, currentTick, L, r1, r2, A, L1, L2, rayon_barre, rayon1, rayon2, coef_conv, R, d):
+        self.image = pg.Surface((L*coef_conv, 70), pg.SRCALPHA)
+        self.orig_image = self.image
+        self.rect = self.image.get_rect(center=pos)
+        self.pos = Vector2(pos)  # The original center position/pivot point.
+        self.offset = Vector2(-(R - d)*coef_conv, 0)
+        self.tige_surface = pg.draw.rect(self.image, (0,0,0), ((0,70/2-rayon_barre*coef_conv),(L*coef_conv,2*rayon_barre*coef_conv +2)) )
+        self.m1_surface = pg.draw.rect(self.image, (255,0,200), ((L*coef_conv/2 + r1*coef_conv - L1*coef_conv/2, 70/2 - rayon1*coef_conv),(L1*coef_conv, 2*rayon1*coef_conv +2))) 
+        self.m2_surface = pg.draw.rect(self.image, (0,255,0), ((L*coef_conv/2 + r2*coef_conv - L2*coef_conv/2, 70/2 - rayon2*coef_conv),(L2*coef_conv, 2*rayon2*coef_conv +2))) 
+        if isOn:
+            self.angle = abs(A) * sin(w*(tick - currentTick)/1000 + A * pi/180) - const_angle_pendule
+            self.rotate()
+        else:
+            self.angle = -const_angle_pendule + A
+            self.rotate()
+
+    def rotate(self):
+        """Rotate the image of the sprite around a pivot point."""
+        # Rotate the image.
+        self.image = pg.transform.rotozoom(self.orig_image, -self.angle, 1)
+        # Rotate the offset vector.
+        offset_rotated = self.offset.rotate(self.angle)
+        # Create a new rect with the center of the sprite + the offset.
+        self.rect = self.image.get_rect(center=self.pos+offset_rotated)
+        
+class Main(): 
+
+    def __init__(self):
+        self.titlePg = "Pendule simulation"
+        self.fps = 60
+
+        self.screen = tk.Tk()
+
+        self.screen_width = self.screen.winfo_screenwidth() 
+        self.screen_height = self.screen.winfo_screenheight()
+
+    def new(self):
+        #Nouvelles instances pour chaques nouvelles parties 
+        pg.init()
+        pg.display.set_caption(self.titlePg) 
+        self.window = pg.display.set_mode((0,0), pg.FULLSCREEN)
+
+        # self.screen.geometry("{}x{}+{}+{}".format(self.window_width, self.window_height, self.x_cordinate, self.y_cordinate))
+
+        self.font1 = pg.font.SysFont("arial", 25)
+        self.font2 = pg.font.SysFont("arial", 30)
+        self.clock = pg.time.Clock()
+
+        self.coef_conv = 1000
+        self.const_angle_pendule = 90
+
+        self.angle = 0
+        self.g = 9.81
+        self.T_E = 1.4
+        self.Ai = 40
+        self.A = self.Ai
+        self.L = 0.1905*2
+        self.r1 = -0.075
+        self.r2 = 0.14
+        self.m1 = 0.08015
+        self.m2 = 0.08015
+        self.M = 0.041  #masse de la barre
+        self.R = self.L/2 
+        self.rayon1 = 0.013  #rayon de la masse 1
+        self.rayon2 = 0.013  #rayon de la masse 2
+        self.rayon_barre = 0.005
+        self.L1 = 0.025  #hauteur de la masse 1
+        self.L2 = 0.025  #hauteur de la masse 2
+        self.d = self.R  #distance du pivot depuis un côté de la tige
+        
+        self.Ibarre = (self.M * self.rayon_barre**2 / 4) + (self.M * self.R**2 /3) + self.M*(self.R-self.d)**2
+        self.I1 = (self.m1 * self.rayon1**2 / 4) + (self.m1 * self.L1**2 /12) + self.m1*(self.r1 + self.R - self.d)**2
+        self.I2 = (self.m2 * self.rayon2**2 / 4) + (self.m2 * self.L2**2 /12) + self.m2*(self.r2 + self.R - self.d)**2
+        self.I_T = self.Ibarre + self.I1 + self.I2
+        self.wT = sqrt(abs((self.r2 + self.R - self.d)*self.m2 + (self.r1 + self.R - self.d)*self.m1 + self.M*(self.R - self.d)) * self.g / self.I_T)
+        
+        self.pivot_pos_T = (self.R*self.coef_conv*2 + 10, self.R*self.coef_conv + self.screen_height/10)
+        self.pivot_pos_E = (self.screen_width - self.R*self.coef_conv*2 - 10, self.R*self.coef_conv + self.screen_height/10)
+
+        if (self.r2 + self.R - self.d)*self.m2 + (self.r1 + self.R - self.d)*self.m1 != 0:
+            self.T_T = sqrt(self.I_T * 4*pi**2 / abs(self.M*(self.R-self.d) + self.m1*(self.r1 + self.R-self.d) + self.m2*(self.r2 + self.R-self.d))/self.g)
+        else:
+            self.T_T = 0
+
+        self.I_E = abs((self.M*(self.R-self.d) + self.m1*(self.r1 + self.R-self.d) + self.m2*(self.r2 + self.R-self.d))) * self.g * self.T_E**2 /(4*pi**2) 
+        self.wE = sqrt(abs((self.r2 + self.R - self.d)*self.m2 + (self.r1 + self.R - self.d)*self.m1 + self.M*(self.R - self.d)) * self.g / self.I_E)
+
+        self.surface_rotatedT = SurfaceRotatedT(self.pivot_pos_T, self.L, self.r1, self.r2, self.A, self.L1, self.L2, self.rayon_barre, self.rayon1, self.rayon2, self.coef_conv, self.const_angle_pendule, self.d, self.R)
+        self.surface_rotatedE = SurfaceRotatedE(self.pivot_pos_E, self.L, self.r1, self.r2, self.A, self.L1, self.L2, self.rayon_barre, self.rayon1, self.rayon2, self.coef_conv, self.const_angle_pendule, self.d, self.R)
+        self.all_sprites = pg.sprite.Group()
+        self.all_sprites.add(self.surface_rotatedT)
+        self.all_sprites.add(self.surface_rotatedE)
+
+        self.show_PE_rect = pg.Rect(self.screen_width - (self.screen_width/2 - 160)/2 - 100, self.screen_height-120, 200, 40)
+        self.show_PE_Surface = pg.Surface((self.show_PE_rect[2], self.show_PE_rect[3]))
+
+        self.show_PT_rect = pg.Rect((self.screen_width/2 - 160)/2 - 100, self.screen_height-120, 200, 40)
+        self.show_PT_Surface = pg.Surface((self.show_PT_rect[2], self.show_PT_rect[3]))
+
+        self.show_IE_rect = pg.Rect(self.screen_width - (self.screen_width/2 - 160)/2 - 140, self.screen_height-180, 280, 40)
+        self.show_IE_Surface = pg.Surface((self.show_IE_rect[2], self.show_IE_rect[3]))
+
+        self.show_IT_rect = pg.Rect((self.screen_width/2 - 160)/2 - 140, self.screen_height-180, 280, 40)
+        self.show_IT_Surface = pg.Surface((self.show_IT_rect[2], self.show_IT_rect[3]))
+
+        self.show_r1_rect = pg.Rect(self.screen_width/2 + 10, self.screen_height - 130 , 150, 40)
+        self.show_r1Surface = pg.Surface((self.show_r1_rect[2], self.show_r1_rect[3]))
+
+        self.show_r2_rect = pg.Rect(self.screen_width/2 + 10, self.screen_height-80, 150, 40)
+        self.show_r2_Surface = pg.Surface((self.show_r2_rect[2], self.show_r2_rect[3]))
+
+        self.show_m1_rect = pg.Rect(self.screen_width/2 - 160, self.screen_height - 130 , 150, 40)
+        self.show_m1_Surface = pg.Surface((self.show_m1_rect[2], self.show_m1_rect[3]))
+
+        self.show_m2_rect = pg.Rect(self.screen_width/2 - 160, self.screen_height - 80 , 150, 40)
+        self.show_m2_Surface = pg.Surface((self.show_m2_rect[2], self.show_m2_rect[3]))
+
+        self.OnOff_rect = pg.Rect(self.screen_width/2 - 75, self.R*self.coef_conv*2 + self.screen_height/10 + 50, 150, 40)
+        self.OnOffSurface = pg.Surface((self.OnOff_rect[2], self.OnOff_rect[3]))
+
+        self.angleDep_rect = pg.Rect(self.screen_width/2 - 75, self.screen_height - 180 , 150, 40)
+        self.angleDep_Surface = pg.Surface((self.angleDep_rect[2], self.angleDep_rect[3]))
+
+        self.show_d_rect = pg.Rect(self.screen_width/2 - 75, self.screen_height - 230 , 150, 40)
+        self.show_d_Surface = pg.Surface((self.show_d_rect[2], self.show_d_rect[3]))
+
+        self.titre_E_rect = pg.Rect(self.screen_width - self.R*self.coef_conv*2 - 100, 20, 200, 40)
+        self.titre_E_Surface = pg.Surface((self.titre_E_rect[2], self.titre_E_rect[3]))
+
+        self.titre_T_rect = pg.Rect(self.R*self.coef_conv*2 - 100, 20 , 200, 40)
+        self.titre_T_Surface = pg.Surface((self.titre_T_rect[2], self.titre_T_rect[3]))
+
+        self.SelectableSurfaceList = [self.show_d_Surface, self.angleDep_Surface, self.show_m1_Surface, self.show_m2_Surface, self.show_r1Surface, self.show_r2_Surface, self.show_PE_Surface]
+
+
+        self.isON = False
+        self.colorON = (255,0,0)
+        self.colorOFF = (0,255,0)
+        self.currentColor = self.colorOFF
+        
+        self.colorSelected = (0,80,180)
+        self.colorNotSelected = (0,180,250)
+        self.currentSelected = self.show_d_Surface
+        self.colorResult = (160,160,160)
+
+        self.currentTick = 0
+        
+
+        print(self.I_T, "  ", self.T_T)
+        print(self.I_E, "  ", self.T_E)
+
+
+        self.run()
+        
+        pg.quit()
+
+
+    def run(self):
+        # Boucle du jeu
+        self.playing = True
+        while self.playing:
+            self.tick = pg.time.get_ticks()
+            self.clock.tick(self.fps) # définie les fps en fonction self.fps
+            self.event()
+            self.update()
+            self.draw()
+        
+    def update(self):
+        if (self.r2 + self.R - self.d)*self.m2 + (self.r1 + self.R - self.d)*self.m1 < 0 : # m1 plus fort
+            self.A = self.Ai
+            self.const_angle_pendule = 90
+        elif (self.r2 + self.R - self.d)*self.m2 + (self.r1 + self.R - self.d)*self.m1 > 0 :
+            self.A = self.Ai -180
+            self.const_angle_pendule = -90
+        else:
+            self.A = self.Ai
+            self.const_angle_pendule = 90
+
+        self.Ibarre = (self.M * self.rayon_barre**2 / 4) + (self.M * self.R**2 /3) + self.M*(self.R-self.d)**2
+        self.I1 = (self.m1 * self.rayon1**2 / 4) + (self.m1 * self.L1**2 /12) + self.m1*(self.r1 + self.R - self.d)**2
+        self.I2 = (self.m2 * self.rayon2**2 / 4) + (self.m2 * self.L2**2 /12) + self.m2*(self.r2 + self.R - self.d)**2
+        self.I_T = self.Ibarre + self.I1 + self.I2
+        self.wT = sqrt(abs((self.r2 + self.R - self.d)*self.m2 + (self.r1 + self.R - self.d)*self.m1 + self.M*(self.R - self.d)) * self.g / self.I_T)
+
+        if (self.r2 + self.R - self.d)*self.m2 + (self.r1 + self.R - self.d)*self.m1 != 0:
+            self.T_T = sqrt(self.I_T * 4*pi**2 / abs(self.M*(self.R-self.d) + self.m1*(self.r1 + self.R-self.d) + self.m2*(self.r2 + self.R-self.d))/self.g)
+        else:
+            self.T_T = 0
+
+        self.I_E = abs((self.M*(self.R-self.d) + self.m1*(self.r1 + self.R-self.d) + self.m2*(self.r2 + self.R-self.d))) * self.g * self.T_E**2 /(4*pi**2) 
+        self.wE = sqrt(abs((self.r2 + self.R - self.d)*self.m2 + (self.r1 + self.R - self.d)*self.m1 + self.M*(self.R - self.d)) * self.g / self.I_E)
+        
+        self.pivot_pos_T = (self.R*self.coef_conv*2 + 10, self.R*self.coef_conv + self.screen_height/10 - (self.R - abs(self.d)))
+        self.pivot_pos_E = (self.screen_width - self.R*self.coef_conv*2 - 10, self.R*self.coef_conv + self.screen_height/10 - (self.R - abs(self.d)))
+        
+        self.surface_rotatedT.update(self.pivot_pos_T, self.wT, self.tick, self.const_angle_pendule, self.isON, self.currentTick, self.L, self.r1, self.r2, self.A, self.L1, self.L2, self.rayon_barre, self.rayon1, self.rayon2, self.coef_conv, self.R, self.d)
+        self.surface_rotatedE.update(self.pivot_pos_E, self.wE, self.tick, self.const_angle_pendule, self.isON, self.currentTick, self.L, self.r1, self.r2, self.A, self.L1, self.L2, self.rayon_barre, self.rayon1, self.rayon2, self.coef_conv, self.R, self.d)
+
+        
+
+    def event(self):
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                self.playing = False
+            if event.type == pg.KEYDOWN:
+                if not self.isON:
+                    if event.key == pg.K_RIGHT:
+                        if self.currentSelected == self.show_d_Surface:
+                            self.d += 0.01
+                            if self.d > self.R*2 -0.01 :
+                                self.d = self.R*2 -0.01
+                        if self.currentSelected == self.angleDep_Surface:
+                            self.Ai += 5 
+                            if self.Ai > 90 :
+                                self.Ai = 90
+                        if self.currentSelected == self.show_m1_Surface:
+                            self.m1 += 0.01
+                            if self.m1 > 1:
+                                self.m1 = 1
+                        if self.currentSelected == self.show_m2_Surface:
+                            self.m2 += 0.01
+                            if self.m2 > 1:
+                                self.m2 = 1
+                        if self.currentSelected == self.show_r1Surface:
+                            self.r1 += 0.01
+                            if self.r1 > self.R - self.L1/2:
+                                self.r1 = self.R - self.L1/2
+                        if self.currentSelected == self.show_r2_Surface:
+                            self.r2 += 0.01
+                            if self.r2 > self.R - self.L2/2:
+                                self.r2 = self.R - self.L2/2
+                        if self.currentSelected == self.show_PE_Surface:
+                            self.T_E += 0.05
+
+                    if event.key == pg.K_LEFT:
+                        if self.currentSelected == self.show_d_Surface:
+                            self.d -= 0.01
+                            if self.d < 0.01 :
+                                self.d = 0.01
+                        if self.currentSelected == self.angleDep_Surface:
+                            self.Ai -= 5 
+                            if self.Ai < -90 :
+                                self.Ai = -90
+                        if self.currentSelected == self.show_m1_Surface:
+                            self.m1 -= 0.01
+                            if self.m1 < 0:
+                                self.m1 = 0
+                        if self.currentSelected == self.show_m2_Surface:
+                            self.m2 -= 0.01
+                            if self.m2 < 0:
+                                self.m2 = 0
+                        if self.currentSelected == self.show_r1Surface:
+                            self.r1 -= 0.01
+                            if self.r1 < -self.R + self.L1/2:
+                                self.r1 = -self.R + self.L1/2
+                        if self.currentSelected == self.show_r2_Surface:
+                            self.r2 -= 0.01
+                            if self.r2 < -self.R + self.L2/2:
+                                self.r2 = -self.R + self.L2/2
+                        if self.currentSelected == self.show_PE_Surface:
+                            self.T_E -= 0.05
+                            if self.T_E < 0:
+                                self.T_E = 0
+
+            if event.type == pg.MOUSEBUTTONDOWN:
+                if self.OnOff_rect.collidepoint(event.pos):
+                    self.isON = not self.isON
+                    if self.currentColor == self.colorOFF:
+                        self.currentColor = self.colorON
+                        self.currentTick = self.tick
+                    else:
+                        self.currentColor = self.colorOFF
+                        self.currentTick = self.tick
+                if self.show_d_rect.collidepoint(event.pos):
+                    self.currentSelected = self.show_d_Surface
+                if self.angleDep_rect.collidepoint(event.pos):
+                    self.currentSelected = self.angleDep_Surface
+                if self.show_m1_rect.collidepoint(event.pos):
+                    self.currentSelected = self.show_m1_Surface
+                if self.show_m2_rect.collidepoint(event.pos):
+                    self.currentSelected = self.show_m2_Surface
+                if self.show_r1_rect.collidepoint(event.pos):
+                    self.currentSelected = self.show_r1Surface
+                if self.show_r2_rect.collidepoint(event.pos):
+                    self.currentSelected = self.show_r2_Surface
+                if self.show_PE_rect.collidepoint(event.pos):
+                    self.currentSelected = self.show_PE_Surface
+                self.currentSelected.fill(self.colorSelected)
+
+            
+    def draw(self):
+        self.window.fill((255,255,255))
+        self.all_sprites.draw(self.window)
+        pg.draw.circle(self.window, (255, 128, 0), [int(i) for i in self.surface_rotatedT.pos], 3)
+        pg.draw.circle(self.window, (255, 128, 0), [int(i) for i in self.surface_rotatedE.pos], 3)
+
+        self.currentSelected.fill(self.colorSelected)
+        for i in self.SelectableSurfaceList:
+            if i != self.currentSelected:
+                i.fill(self.colorNotSelected)
+
+        self.window.blit(self.show_r1Surface, (self.show_r1_rect[0], self.show_r1_rect[1]))
+        self.show_r1Text = self.font1.render("r1 = " + str(round((self.r1 + self.d - self.R)*100,2)) + " cm" , True, (255,255,255))
+        self.window.blit(self.show_r1Text, (self.show_r1_rect[0]+5, self.show_r1_rect[1]+5))
+
+        self.window.blit(self.show_r2_Surface, (self.show_r2_rect[0], self.show_r2_rect[1]))
+        self.show_r2Text = self.font1.render("r2 = " + str(round((self.r2 + self.d - self.R)*100,2)) + " cm" , True, (255,255,255))
+        self.window.blit(self.show_r2Text, (self.show_r2_rect[0]+5, self.show_r2_rect[1]+5))
+
+        self.window.blit(self.show_m1_Surface, (self.show_m1_rect[0], self.show_m1_rect[1]))
+        self.show_m1Text = self.font1.render("m1 = " + str(round(self.m1,2)) + " kg" , True, (255,0,200))
+        self.window.blit(self.show_m1Text, (self.show_m1_rect[0]+5, self.show_m1_rect[1]+5))
+
+        self.window.blit(self.show_m2_Surface, (self.show_m2_rect[0], self.show_m2_rect[1]))
+        self.show_m2Text = self.font1.render("m2 = " + str(round(self.m2,2)) + " kg" , True, (0,255,0))
+        self.window.blit(self.show_m2Text, (self.show_m2_rect[0]+5, self.show_m2_rect[1]+5))
+
+        self.window.blit(self.angleDep_Surface, (self.angleDep_rect[0], self.angleDep_rect[1]))
+        self.angleDepText = self.font1.render("A = " + str(round(self.Ai,2)) + " °" , True, (255,255,255))
+        self.window.blit(self.angleDepText, (self.angleDep_rect[0]+5, self.angleDep_rect[1]+5))
+
+        self.window.blit(self.show_d_Surface, (self.show_d_rect[0], self.show_d_rect[1]))
+        self.show_dText = self.font1.render("d = " + str(round(self.d*100,2)) + " cm" , True, (255,255,255))
+        self.window.blit(self.show_dText, (self.show_d_rect[0]+5, self.show_d_rect[1]+5))
+
+        self.window.blit(self.show_PE_Surface, (self.show_PE_rect[0], self.show_PE_rect[1]))
+        self.show_PEText = self.font1.render(" T exp. = " + str(round(self.T_E,4)) + " sec" , True, (255,255,255))
+        self.window.blit(self.show_PEText, (self.show_PE_rect[0]+5, self.show_PE_rect[1]+5))
+
+        self.show_PT_Surface.fill(self.colorResult)
+        self.window.blit(self.show_PT_Surface, (self.show_PT_rect[0], self.show_PT_rect[1]))
+        self.show_PTText = self.font1.render(" T theo. = " + str(round(self.T_T,4)) + " sec" , True, (255,255,255))
+        self.window.blit(self.show_PTText, (self.show_PT_rect[0]+5, self.show_PT_rect[1]+5))
+
+        self.show_IE_Surface.fill(self.colorResult)
+        self.window.blit(self.show_IE_Surface, (self.show_IE_rect[0], self.show_IE_rect[1]))
+        self.show_IEText = self.font1.render(" I exp. = " + str(round(self.I_E,6)) + " kg*m**2" , True, (255,255,255))
+        self.window.blit(self.show_IEText, (self.show_IE_rect[0]+5, self.show_IE_rect[1]+5))
+
+        self.show_IT_Surface.fill(self.colorResult)
+        self.window.blit(self.show_IT_Surface, (self.show_IT_rect[0], self.show_IT_rect[1]))
+        self.show_ITText = self.font1.render(" I theo. = " + str(round(self.I_T,6)) + " kg*m**2" , True, (255,255,255))
+        self.window.blit(self.show_ITText, (self.show_IT_rect[0]+5, self.show_IT_rect[1]+5))
+
+        self.titre_E_Surface.fill((255,255,255))
+        self.window.blit(self.titre_E_Surface, (self.titre_E_rect[0], self.titre_E_rect[1]))
+        self.titre_EText = self.font1.render("Pendule expérientale", True, (0,0,0))
+        self.window.blit(self.titre_EText, (self.titre_E_rect[0]+5, self.titre_E_rect[1]+5))
+
+        self.titre_T_Surface.fill((255,255,255))
+        self.window.blit(self.titre_T_Surface, (self.titre_T_rect[0], self.titre_T_rect[1]))
+        self.titre_TText = self.font1.render("Pendule théorique", True, (0,0,0))
+        self.window.blit(self.titre_TText, (self.titre_T_rect[0]+5, self.titre_T_rect[1]+5))
+
+        self.OnOffSurface.fill(self.currentColor)
+        self.window.blit(self.OnOffSurface, (self.OnOff_rect[0]+5, self.OnOff_rect[1]+5))
+
+
+        pg.draw.rect(self.window, (0,0,0), ((5, 15), (self.R*self.coef_conv*4 + 2,self.R*self.coef_conv*2 + self.screen_height/10 + 20)), 2)
+        pg.draw.rect(self.window, (0,0,0), ((self.screen_width - self.R*self.coef_conv*4 - 2, 15), (self.R*self.coef_conv*4 - 3,self.R*self.coef_conv*2 + self.screen_height/10 + 20)), 2)
+
+        pg.display.flip()
+
+
+w = Main()
+w.new()
